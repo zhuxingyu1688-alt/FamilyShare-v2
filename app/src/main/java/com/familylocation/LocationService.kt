@@ -95,7 +95,15 @@ class LocationService : Service() {
 
         val alarmIndex = intent?.getIntExtra(AlarmScheduler.EXTRA_ALARM_INDEX, 0) ?: 0
         createChannel()
-        startForeground(NOTIF_ID, buildNotif())
+        // 尝试前台运行；Android 12+ 后台启动前台服务可能被系统拒绝
+        var isForeground = false
+        try {
+            startForeground(NOTIF_ID, buildNotif())
+            isForeground = true
+        } catch (e: Exception) {
+            // 前台服务启动失败（Android 12+ 限制），记录并继续尝试后台定位
+            Prefs.setLastWake(applicationContext, "${Prefs.nowText()}：前台服务未启动(${e.message?.take(40)})，降级为后台短时定位")
+        }
         acquireWakeLock()
 
         scope.launch {
@@ -132,10 +140,12 @@ class LocationService : Service() {
                 Prefs.setLastStatus(applicationContext, "❌ ${e.message?.take(60) ?: "发送异常"}")
             } finally {
                 releaseWakeLock()
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    stopForeground(STOP_FOREGROUND_REMOVE)
-                } else {
-                    @Suppress("DEPRECATION") stopForeground(true)
+                if (isForeground) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        stopForeground(STOP_FOREGROUND_REMOVE)
+                    } else {
+                        @Suppress("DEPRECATION") stopForeground(true)
+                    }
                 }
                 stopSelf(startId)
             }
