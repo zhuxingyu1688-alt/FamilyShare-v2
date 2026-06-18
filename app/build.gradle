@@ -47,4 +47,7 @@ dependencies {
     // 协程
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
+
+    // WorkManager（后台定期自愈，国产 ROM 必备）
+    implementation 'androidx.work:work-runtime-ktx:2.9.0'
 }
