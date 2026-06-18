@@ -419,16 +419,17 @@ class MainActivity : AppCompatActivity() {
     // ──────────────── Self Check ────────────────
 
     private fun showSelfCheckDialog() {
+        val ctx = this
         val message = buildString {
-            appendLine(if (hasFineLocationPermission()) "✅ 精确位置权限：已允许" else "❌ 精确位置权限：未允许")
-            appendLine(if (hasBackgroundLocationPermission()) "✅ 后台位置：已允许/系统无需" else "❌ 后台位置：未始终允许")
-            appendLine(if (isLocationSwitchOn()) "✅ 手机定位总开关：已开启" else "❌ 手机定位总开关：关闭")
-            appendLine(if (hasNotificationPermission()) "✅ 通知权限：已允许" else "❌ 通知权限：未允许")
-            appendLine(if (hasExactAlarmPermission()) "✅ 闹钟/精确提醒：已允许" else "❌ 闹钟/精确提醒：未允许")
-            appendLine(if (isBatteryOptimizationIgnored()) "✅ 电池优化：已忽略/无限制" else "⚠️ 电池优化：建议设置为不允许优化")
+            appendLine(if (ctx.hasFineLocationPermission()) "✅ 精确位置权限：已允许" else "❌ 精确位置权限：未允许")
+            appendLine(if (ctx.hasBackgroundLocationPermission()) "✅ 后台位置：已允许/系统无需" else "❌ 后台位置：未始终允许")
+            appendLine(if (ctx.isLocationSwitchOn()) "✅ 手机定位总开关：已开启" else "❌ 手机定位总开关：关闭")
+            appendLine(if (ctx.hasNotificationPermission()) "✅ 通知权限：已允许" else "❌ 通知权限：未允许")
+            appendLine(if (ctx.hasExactAlarmPermission()) "✅ 闹钟/精确提醒：已允许" else "❌ 闹钟/精确提醒：未允许")
+            appendLine(if (ctx.isBatteryOptimizationIgnored()) "✅ 电池优化：已忽略/无限制" else "⚠️ 电池优化：建议设置为不允许优化")
             appendLine()
-            appendLine("定时①：${Prefs.getSendTimeText(this)}，下次 ${Prefs.getNextTriggerText(this)}")
-            appendLine("定时②：${Prefs.getSend2TimeText(this)}，下次 ${Prefs.getNextTriggerText2(this)}")
+            appendLine("定时①：${Prefs.getSendTimeText(ctx)}，下次 ${Prefs.getNextTriggerText(ctx)}")
+            appendLine("定时②：${Prefs.getSend2TimeText(ctx)}，下次 ${Prefs.getNextTriggerText2(ctx)}")
             appendLine()
             appendLine("荣耀还要手动确认：应用启动管理 → 关闭自动管理 → 打开自启动、关联启动、后台活动。")
         }
