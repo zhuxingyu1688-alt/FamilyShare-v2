@@ -169,6 +169,7 @@ class MainActivity : AppCompatActivity() {
                 Prefs.setPendingEnable(this, false)
                 Prefs.setEnabled(this, false)
                 AlarmScheduler.cancelAll(this)
+                AlarmHealWorker.cancel(this)          // 关闭时取消 WorkManager 自愈
                 Prefs.setLastStatus(this, "⏹️ 已关闭自动发送，并清理两个闹钟")
                 syncToggleUI(false)
                 toast("已关闭每日位置发送")
@@ -215,6 +216,10 @@ class MainActivity : AppCompatActivity() {
             if (hasFineLocationPermission() && hasBackgroundLocationPermission() && hasExactAlarmPermission()) {
                 doEnable()
             }
+        }
+        // 确保 WorkManager 自愈在运行（国产 ROM 可能杀掉 Worker）
+        if (Prefs.isEnabled(this)) {
+            AlarmHealWorker.ensureScheduled(this)
         }
         updateStatus()
     }
@@ -352,8 +357,10 @@ class MainActivity : AppCompatActivity() {
         saveBothTimes()
         AlarmScheduler.cancelAll(this)
         AlarmScheduler.schedule(this)
+        // 启动 WorkManager 定期自愈（国产 ROM 双保险）
+        AlarmHealWorker.ensureScheduled(this)
         val summary = Prefs.getScheduleSummary(this)
-        Prefs.setLastStatus(this, "✅ 已开启自动发送；每天 $summary")
+        Prefs.setLastStatus(this, "✅ 已开启自动发送；每天 $summary（含 WorkManager 自愈）")
         syncToggleUI(true)
         toast("已设置：每天 $summary 自动发送位置")
     }
